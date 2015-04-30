@@ -52,7 +52,6 @@ Type: `String`
 Default value: null
 
 Defines the password, if available, of the certificate.
-```
 
 ## Supported Platforms
 * Windows
