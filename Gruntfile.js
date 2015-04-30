@@ -16,7 +16,6 @@ module.exports = function(grunt) {
       all: [
         'Gruntfile.js',
         'tasks/*.js',
-        '<%= nodeunit.tests %>'
       ],
       options: {
         jshintrc: '.jshintrc'
@@ -32,26 +31,19 @@ module.exports = function(grunt) {
     codesign: {
       default_options: {
         options: {
+          certificateFilePath: '',
+          certificatePassword: '',
         },
         files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
-        }
-      },
-      custom_options: {
-        options: {
-          separator: ': ',
-          punctuation: ' !!!'
+          src: ['']
         },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
-        }
       }
     },
 
     // Unit tests.
-    nodeunit: {
-      tests: ['test/*_test.js']
-    }
+    //nodeunit: {
+    //  tests: ['test/*_test.js']
+    //}
 
   });
 
@@ -65,9 +57,9 @@ module.exports = function(grunt) {
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'codesign', 'nodeunit']);
+  //grunt.registerTask('test', ['clean', 'codesign', 'nodeunit']);
 
   // By default, lint and run all tests.
-  grunt.registerTask('default', ['jshint', 'test']);
+  grunt.registerTask('default', ['jshint']);
 
 };

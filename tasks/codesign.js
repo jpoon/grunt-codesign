@@ -10,41 +10,45 @@
 
 module.exports = function(grunt) {
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
-
   grunt.registerMultiTask('codesign', 'Grunt CodeSign', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
-    });
+    var options = this.options({});
+    this.requiresConfig(this.certificateFilePath);
 
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
+    var cmd, args;
+    switch(process.platform) {
+      case 'win32':
+        cmd = './bin/signtool';
+        args = ['sign'];
+
+        // signing cert file path
+        args.push('/f', options.certificateFilePath);
+        // verbose
+        args.push('/v');
+        // certificate password
+        if (options.certificatePassword) {
+          args.push('/p', options.certificatePassword);
         }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+        break;
+      default:
+        grunt.fail.fatal('Unsupported platform: ' + process.platform);
+    }
 
-      // Handle options.
-      src += options.punctuation;
+    var done = this.async();
+    var callback = function(error, result, code) {
+      grunt.verbose.writeln(result);
+      if (code !== 0) {
+        grunt.fail.warn(error);
+      }
+      done();
+    };
 
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
-
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
+    this.filesSrc.forEach(function(file) {
+      grunt.log.ok("signing " + file);
+      grunt.util.spawn({
+        cmd: cmd,
+        args: args.concat(file)
+      }, callback);
     });
-  });
 
+  });
 };
