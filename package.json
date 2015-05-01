@@ -1,12 +1,12 @@
 {
   "name": "grunt-codesign",
-  "description": "Grunt CodeSign",
-  "version": "0.1.1",
+  "description": "CodeSigns files",
+  "version": "0.1.2",
   "homepage": "https://github.com/jpoon/grunt-codesign",
   "author": {
     "name": "Jason Poon",
     "email": "github@jasonpoon.ca",
-    "url": "jasonpoon.ca"
+    "url": "http://jasonpoon.ca"
   },
   "repository": {
     "type": "git",
