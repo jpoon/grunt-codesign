@@ -28,6 +28,7 @@ grunt.initConfig({
     options: {
       certificateFilePath: '/path/to/certificate.pfx',
       certificatePassword: 'certificate-password',
+      signToolPath: '/path/to/my/local/sign/tool'
     },
     files: {
       src: [
@@ -52,6 +53,12 @@ Type: `String`
 Default value: null
 
 Defines the password, if available, of the certificate.
+
+#### options.signToolPath
+Type: `String`
+Default value: `['C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Bin/signtool.exe', 'C:/Program Files (x86)/Windows Kits/8.1/bin/x86/signtool.exe']`
+
+Defines override for path of signtool.exe
 
 ## Supported Platforms
 * Windows

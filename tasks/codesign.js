@@ -10,16 +10,34 @@
 
 module.exports = function(grunt) {
 
-  grunt.registerMultiTask('codesign', 'Grunt CodeSign', function() {
-    var options = this.options({});
+  grunt.registerMultiTask('codesign', 'CodeSign Files', function() {
+    var options = this.options({
+      signToolPath: [
+        'C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Bin/signtool.exe',
+        'C:/Program Files (x86)/Windows Kits/8.1/bin/x86/signtool.exe'
+      ]
+    });
+
     this.requiresConfig(this.certificateFilePath);
 
     var cmd, args;
     switch(process.platform) {
       case 'win32':
-        cmd = './bin/signtool';
-        args = ['sign'];
+        var cmd;
 
+        options.signToolPath = options.signToolPath instanceof Array ? options.signToolPath : [options.signToolPath];
+        options.signToolPath.forEach(function(path) {
+          if (grunt.file.exists(path)) {
+            cmd = path;
+          }
+        });
+
+        if (!cmd) {
+          grunt.fail.fatal('Unable to find signtool.exe. Ensure Windows SDK installed')
+        }
+
+
+        args = ['sign'];
         // signing cert file path
         args.push('/f', options.certificateFilePath);
         // verbose
