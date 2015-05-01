@@ -1,6 +1,6 @@
-# grunt-codesign
+# grunt-codesign [![NPM version](https://badge.fury.io/js/grunt-codesign.svg)](http://badge.fury.io/js/winston-azuretable)
 
-> Codesigns files
+> Code sign files
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -56,12 +56,12 @@ Defines the password, if available, of the certificate.
 
 #### options.signToolPath
 Type: `String`
-Default value: `['C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Bin/signtool.exe', 'C:/Program Files (x86)/Windows Kits/8.1/bin/x86/signtool.exe']`
+Default value: `['C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Bin/signtool.exe', 'C:/Program Files (x86)/Windows Kits/8.0/bin/x86/signtool.exe', 'C:/Program Files (x86)/Windows Kits/8.1/bin/x86/signtool.exe']`
 
 Defines override for path of signtool.exe
 
 ## Supported Platforms
-* Windows
+* Windows 7+
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
