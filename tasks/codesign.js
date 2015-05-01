@@ -14,6 +14,7 @@ module.exports = function(grunt) {
     var options = this.options({
       signToolPath: [
         'C:/Program Files (x86)/Microsoft SDKs/Windows/v7.1A/Bin/signtool.exe',
+        'C:/Program Files (x86)/Windows Kits/8.0/bin/x86/signtool.exe',
         'C:/Program Files (x86)/Windows Kits/8.1/bin/x86/signtool.exe'
       ]
     });
@@ -25,11 +26,19 @@ module.exports = function(grunt) {
       case 'win32':
         var cmd;
 
+        grunt.verbose.writeln('Searching for signtool...')
         options.signToolPath = options.signToolPath instanceof Array ? options.signToolPath : [options.signToolPath];
-        options.signToolPath.forEach(function(path) {
+        options.signToolPath.every(function(path) {
+          grunt.verbose.write(path)
+
           if (grunt.file.exists(path)) {
+            grunt.verbose.writeln(' found')
             cmd = path;
+            return false;
           }
+
+          grunt.verbose.writeln(' not found')
+          return true;
         });
 
         if (!cmd) {
