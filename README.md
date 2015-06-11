@@ -1,4 +1,4 @@
-# grunt-codesign [![NPM version](https://badge.fury.io/js/grunt-codesign.svg)](http://badge.fury.io/js/winston-azuretable)
+# grunt-codesign [![NPM version](https://badge.fury.io/js/grunt-codesign.svg)](http://badge.fury.io/js/grunt-codesign)
 
 > Code sign files
 
