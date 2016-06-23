@@ -47,14 +47,21 @@ module.exports = function(grunt) {
 
 
         args = ['sign'];
-        // signing cert file path
-        args.push('/f', options.certificateFilePath);
+
+        // sign with cert file path?
+        if (options.certificateFilePath) {
+          args.push('/f', options.certificateFilePath);
+          // certificate password
+          if (options.certificatePassword) {
+            args.push('/p', options.certificatePassword);
+          }
+        }
+        else if (options.certificateSha1) {
+          // Use SHA1 thumbprint (the cert should be installed in the store)
+          args.push('/sha1', options.certificateSha1);
+        }
         // verbose
         args.push('/v');
-        // certificate password
-        if (options.certificatePassword) {
-          args.push('/p', options.certificatePassword);
-        }
         break;
       default:
         grunt.fail.fatal('Unsupported platform: ' + process.platform);

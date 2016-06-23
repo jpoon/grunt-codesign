@@ -33,6 +33,7 @@ module.exports = function(grunt) {
         options: {
           certificateFilePath: '',
           certificatePassword: '',
+          certificateSha1: '',
         },
         files: {
           src: ['']
