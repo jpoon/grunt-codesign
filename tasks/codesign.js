@@ -10,6 +10,8 @@
 
 module.exports = function(grunt) {
 
+  var path = require('path');
+
   grunt.registerMultiTask('codesign', 'CodeSign Files', function() {
     var options = this.options({
       signToolPath: [
@@ -67,6 +69,30 @@ module.exports = function(grunt) {
         grunt.fail.fatal('Unsupported platform: ' + process.platform);
     }
 
+    var xmlsign;
+    function buildXmlSign(callback) {
+      if (xmlsign) {
+        // Already built
+        callback(xmlsign.cmd, xmlsign.args);
+      }
+      // Build tool using csc
+      grunt.util.spawn({
+        cmd: 'csc',
+        args: ['xmlsign.cs'],
+        opts: { cwd: './cs' }
+      }, function(error, result, code) {
+          if (code !== 0) {
+            grunt.verbose.writeln(result);
+            grunt.fail.warn(error);
+            xmlsign = { };
+          }
+          else {
+            xmlsign = { cmd: './cs/xmlsign', args: ['/v', '/sha1', options.certificateSha1] };
+          }
+          callback(xmlsign.cmd, xmlsign.args);
+      });
+    }
+
     var done = this.async();
     var callback = function(error, result, code) {
       grunt.verbose.writeln(result);
@@ -77,12 +103,25 @@ module.exports = function(grunt) {
     };
 
     this.filesSrc.forEach(function(file) {
-      grunt.log.ok("signing " + file);
-      grunt.util.spawn({
-        cmd: cmd,
-        args: args.concat(file)
-      }, callback);
+      var ext = path.extname(file);
+      if (ext !== '.xml') {
+        grunt.log.ok("signing " + file + " with signtool");
+        grunt.util.spawn({
+          cmd: cmd,
+          args: args.concat(file)
+        }, callback);
+      }
+      else {
+        grunt.log.ok("signing " + file + " with xmlsign");
+        buildXmlSign(function(cmd, args) {
+          if (cmd) {
+            grunt.util.spawn({
+              cmd: cmd,
+              args: args.concat(file)
+            }, callback);
+          }
+        });
+      }
     });
-
   });
 };
