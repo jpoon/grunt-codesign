@@ -143,7 +143,7 @@ namespace XmlTools
     {
         private static void ShowHelp()
         {
-            Console.WriteLine("Usage: xmlsign /in <infile> [/out <outfile>] /sha1 <sha1> [/sha1 <sha1b> ...]");
+            Console.WriteLine("Usage: xmlsign <infile> [/v | /verbose] [/o | /out <outfile>] /sha1 <sha1> [/sha1 <sha1b> ...]");
         }
 
         /// <summary>
@@ -153,19 +153,39 @@ namespace XmlTools
         {
             string inputFile = null;
             string outputFile = null;
+            bool verbose = false;
             List<string> sha1 = new List<string>();
-            for (int i = 0; i < args.Length - 1; i++) 
+            for (int i = 0; i < args.Length; i++) 
             {
+                if (args[i][0] != '/') 
+                {
+                    if (inputFile != null)
+                    {
+                        Console.Error.WriteLine("Multiple input files not supported");
+                        return 1;
+                    }
+                    inputFile = args[i];
+                    continue;
+                }
+
                 switch (args[i]) 
                 {
-                    case "/in":
-                        inputFile = args[++i];
+                    case "/v":
+                    case "/verbose":
+                        verbose = true;
                         break;
+                    case "/o":
                     case "/out":
-                        outputFile = args[++i];
+                        if (i < args.Length - 1) 
+                        {
+                            outputFile = args[++i];
+                        }
                         break;
                     case "/sha1":
-                        sha1.Add(args[++i]);
+                        if (i < args.Length - 1) 
+                        {
+                            sha1.Add(args[++i]);
+                        }
                         break;
                 }
             }
@@ -187,7 +207,7 @@ namespace XmlTools
                 return 1;
             }
 
-            var helper = new XmlSignatureHelper(sha1.ToArray(), true); 
+            var helper = new XmlSignatureHelper(sha1.ToArray(), verbose); 
             var doc = new XmlDocument();
             doc.Load(inputFile);
             if (helper.Sign(doc, inputFile))
