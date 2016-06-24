@@ -34,6 +34,7 @@ module.exports = function(grunt) {
           certificateFilePath: '',
           certificatePassword: '',
           certificateSha1: '',
+          forceXml: false
         },
         files: {
           src: ['']

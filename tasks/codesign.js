@@ -104,7 +104,7 @@ module.exports = function(grunt) {
 
     this.filesSrc.forEach(function(file) {
       var ext = path.extname(file);
-      if (ext !== '.xml') {
+      if (ext !== '.xml' && !forceXml) {
         grunt.log.ok("signing " + file + " with signtool");
         grunt.util.spawn({
           cmd: cmd,
