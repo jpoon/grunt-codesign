@@ -79,15 +79,15 @@ module.exports = function(grunt) {
       grunt.util.spawn({
         cmd: 'csc',
         args: ['xmlsign.cs'],
-        opts: { cwd: './cs' }
+        opts: { cwd: path.join(__dirname, '../cs') }
       }, function(error, result, code) {
           if (code !== 0) {
-            grunt.verbose.writeln(result);
-            grunt.fail.warn(error);
+            grunt.verbose.writeln((result && result.stdout) || result);
+            grunt.fail.warn((result && result.stderr) || error);
             xmlsign = { };
           }
           else {
-            xmlsign = { cmd: './cs/xmlsign', args: ['/v', '/sha1', options.certificateSha1] };
+            xmlsign = { cmd:  path.join(__dirname, '../cs/xmlsign'), args: ['/v', '/sha1', options.certificateSha1] };
           }
           callback(xmlsign.cmd, xmlsign.args);
       });
@@ -104,7 +104,7 @@ module.exports = function(grunt) {
 
     this.filesSrc.forEach(function(file) {
       var ext = path.extname(file);
-      if (ext !== '.xml' && !forceXml) {
+      if (ext !== '.xml' && !options.forceXml) {
         grunt.log.ok("signing " + file + " with signtool");
         grunt.util.spawn({
           cmd: cmd,
