@@ -28,6 +28,7 @@ grunt.initConfig({
     options: {
       certificateFilePath: '/path/to/certificate.pfx',
       certificatePassword: 'certificate-password',
+      certificateSha1: '0123456789abcdef0123456789abcdef01234567',
       signToolPath: '/path/to/my/local/sign/tool'
     },
     files: {
@@ -46,13 +47,19 @@ grunt.initConfig({
 Type: `String`
 Default value: null
 
-Defines the file path of the certificate to be used for code signing.
+Defines the file path of the certificate to be used for code signing. If specified, the _certificateSha1_ property will be ignored.
 
 #### options.certificatePassword
 Type: `String`
 Default value: null
 
-Defines the password, if available, of the certificate.
+Defines the password, if available, of the certificate. Requires _certificateFilePath_ to be specified.
+
+#### options.certificateSha1
+Type: `String`
+Default value: null
+
+Defines the SHA1 fingerprint of the certificate to use. The SHA1 hash is commonly specified when multiple certificates installed in the certificate store satisfy the criteria specified by the remaining switches, or if the certificate file is not available.
 
 #### options.signToolPath
 Type: `String`

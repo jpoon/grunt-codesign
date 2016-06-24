@@ -10,6 +10,8 @@
 
 module.exports = function(grunt) {
 
+  var path = require('path');
+
   grunt.registerMultiTask('codesign', 'CodeSign Files', function() {
     var options = this.options({
       signToolPath: [
@@ -47,17 +49,48 @@ module.exports = function(grunt) {
 
 
         args = ['sign'];
-        // signing cert file path
-        args.push('/f', options.certificateFilePath);
+
+        // sign with cert file path?
+        if (options.certificateFilePath) {
+          args.push('/f', options.certificateFilePath);
+          // certificate password
+          if (options.certificatePassword) {
+            args.push('/p', options.certificatePassword);
+          }
+        }
+        else if (options.certificateSha1) {
+          // Use SHA1 thumbprint (the cert should be installed in the store)
+          args.push('/sha1', options.certificateSha1);
+        }
         // verbose
         args.push('/v');
-        // certificate password
-        if (options.certificatePassword) {
-          args.push('/p', options.certificatePassword);
-        }
         break;
       default:
         grunt.fail.fatal('Unsupported platform: ' + process.platform);
+    }
+
+    var xmlsign;
+    function buildXmlSign(callback) {
+      if (xmlsign) {
+        // Already built
+        callback(xmlsign.cmd, xmlsign.args);
+      }
+      // Build tool using csc
+      grunt.util.spawn({
+        cmd: 'csc',
+        args: ['xmlsign.cs'],
+        opts: { cwd: path.join(__dirname, '../cs') }
+      }, function(error, result, code) {
+          if (code !== 0) {
+            grunt.verbose.writeln((result && result.stdout) || result);
+            grunt.fail.warn((result && result.stderr) || error);
+            xmlsign = { };
+          }
+          else {
+            xmlsign = { cmd:  path.join(__dirname, '../cs/xmlsign'), args: ['/v', '/sha1', options.certificateSha1] };
+          }
+          callback(xmlsign.cmd, xmlsign.args);
+      });
     }
 
     var done = this.async();
@@ -70,12 +103,25 @@ module.exports = function(grunt) {
     };
 
     this.filesSrc.forEach(function(file) {
-      grunt.log.ok("signing " + file);
-      grunt.util.spawn({
-        cmd: cmd,
-        args: args.concat(file)
-      }, callback);
+      var ext = path.extname(file);
+      if (ext !== '.xml' && !options.forceXml) {
+        grunt.log.ok("signing " + file + " with signtool");
+        grunt.util.spawn({
+          cmd: cmd,
+          args: args.concat(file)
+        }, callback);
+      }
+      else {
+        grunt.log.ok("signing " + file + " with xmlsign");
+        buildXmlSign(function(cmd, args) {
+          if (cmd) {
+            grunt.util.spawn({
+              cmd: cmd,
+              args: args.concat(file)
+            }, callback);
+          }
+        });
+      }
     });
-
   });
 };
